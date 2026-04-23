@@ -1,109 +1,6 @@
-# Taller de Agentes - Universidad
+# Taller de Agentes - UCM x Next Digital
 
-Repositorio de ejemplos prácticos con **LangChain** y **OpenAI** para aprender los fundamentos de los LLMs y los agentes de IA.
-
-- **Python**: 3.11 o superior
-- **Gestor de paquetes**: [uv](https://docs.astral.sh/uv/)
-- **Framework**: LangChain
-- **Proveedor de LLMs**: OpenAI
-
-## Requisitos previos
-
-- Python 3.11+
-- Clave de API de OpenAI (Solicitar a la persona que está impartiendo el taller)
-
-## Instalación
-
-### Con uv (recomendado)
-
-```bash
-# Clonar o entrar en el directorio del proyecto
-cd "Taller Agentes Universidad"
-
-# Instalar dependencias
-uv sync
-
-# Configurar la clave de API
-cp .env.example .env
-# Editar .env y añadir tu OPENAI_API_KEY
-```
-
-### Con pip
-
-```bash
-cd "Taller Agentes Universidad"
-
-pip install -r requirements.txt
-
-cp .env.example .env
-# Editar .env y añadir tu OPENAI_API_KEY
-```
-
-## Estructura del proyecto
-
-```
-├── sesion_1/           # Fundamentos de LLMs
-│   ├── 1_tokenizacion.py
-│   ├── 2_control_creatividad.py
-│   ├── 3_roles_system_prompt.py
-│   ├── 4_extraccion_json.py
-│   └── 5_function_calling.py
-├── sesion_2/           # RAG, herramientas y agentes
-│   ├── 1_busqueda_semantica.py
-│   ├── 2_conexion_documentos.py
-│   ├── 3_memoria_rag.py
-│   ├── 4_uso_herramientas.py
-│   ├── 5_loop_agente.py
-│   └── ejercicios/
-│       ├── ejercicio_1_enunciado.py
-│       ├── ejercicio_2_enunciado.py
-│       └── ejercicio_3_enunciado.py
-├── datos/
-│   └── documento.pdf   # PDF de ejemplo para RAG
-└── scripts/
-    └── generar_documento.py  # Genera el PDF de ejemplo
-```
-
-## Ejemplos
-
-### Sesión 1: Fundamentos
-
-| Ejemplo | Descripción | Con uv | Con python |
-|---------|-------------|--------|------------|
-| **1. Tokenización** | Cómo una frase se convierte en IDs de tokens y su impacto en coste/límite | `uv run sesion_1/1_tokenizacion.py` | `python sesion_1/1_tokenizacion.py` |
-| **2. Control de creatividad** | Mismo prompt con temperatura 0 vs 1.5 para ver la degradación del lenguaje | `uv run sesion_1/2_control_creatividad.py` | `python sesion_1/2_control_creatividad.py` |
-| **3. Roles y System Prompt** | El mismo mensaje con tres system prompts distintos (profesor, niños, escéptico) para ver cómo moldean el comportamiento del modelo | `uv run sesion_1/3_roles_system_prompt.py` | `python sesion_1/3_roles_system_prompt.py` |
-| **4. Extracción JSON** | Obligar al modelo a responder con JSON válido para que un programa pueda leerlo | `uv run sesion_1/4_extraccion_json.py` | `python sesion_1/4_extraccion_json.py` |
-| **5. Function Calling** | El modelo indica "necesito llamar a enviar_correo()" en lugar de responder con texto | `uv run sesion_1/5_function_calling.py` | `python sesion_1/5_function_calling.py` |
-
-### Sesión 2: RAG y Agentes
-
-| Ejemplo | Descripción | Comando |
-|---------|-------------|---------|
-| **1. Búsqueda semántica** | Embeddings de 3 frases; encontrar la más parecida a una pregunta (sin palabras exactas) | `uv run sesion_2/1_busqueda_semantica.py` |
-| **2. Conexión a documentos** | Cargar PDF, trocear (chunking) y consultar con RAG básico | `uv run sesion_2/2_conexion_documentos.py` |
-| **3. Memoria en RAG** | Comparativa RAG sin y con memoria: reformulación de preguntas de seguimiento con `history_aware_retriever` | `uv run sesion_2/3_memoria_rag.py` |
-| **4. Uso de herramientas** | LLM usa búsqueda en Google para responder sobre noticias recientes | `uv run sesion_2/4_uso_herramientas.py` |
-| **5. Loop del agente** | Agente que combina RAG + búsqueda web y muestra el razonamiento en consola | `uv run sesion_2/5_loop_agente.py` |
-
-### Ejercicios Sesión 2
-
-| Ejercicio | Descripción | Comando |
-|-----------|-------------|---------|
-| **1. Evaluador de relevancia** | Añadir un paso de evaluación JSON al RAG para decidir si el contexto recuperado es suficiente antes de responder | `uv run sesion_2/ejercicios/ejercicio_1_enunciado.py` |
-| **2. Memoria por resumen** | Compactar el historial de mensajes cuando supera un umbral, resumiendo los turnos antiguos | `uv run sesion_2/ejercicios/ejercicio_2_enunciado.py` |
-| **3. Chat con Streamlit** | Interfaz web de chat con historial persistente en `session_state` y control de temperatura desde la barra lateral | `streamlit run sesion_2/ejercicios/ejercicio_3_enunciado.py` |
-
-
-### Notas
-
-- **1_tokenizacion.py** no requiere API key (usa tiktoken localmente).
-- El resto de ejemplos necesita `OPENAI_API_KEY` en `.env`.
-- Para regenerar el PDF de ejemplo: `uv run scripts/generar_documento.py`
-
----
-
-## Práctica Final: Chatbot Agéntico con RAG, Búsqueda Web y Guardarraíles
+## Chatbot Agéntico con RAG, Búsqueda Web y Guardarraíles
 
 ### Arquitectura del sistema
 
@@ -156,7 +53,69 @@ cp .env.example .env
 
 ---
 
-### Enunciado
+## Cómo ejecutar este repositorio
+
+Pasos rápidos para clonar, instalar dependencias y ejecutar la app Streamlit.
+
+1) Clonar el repositorio
+
+```bash
+git clone <REPO_URL>
+cd chatbot-agentico-rag
+```
+
+2) Instalar dependencias (recomendado: `uv`)
+
+- Con `uv` (recomendado):
+
+```bash
+# instala/sincroniza las dependencias definidas en pyproject.toml
+uv sync
+
+# copia el fichero de ejemplo de variables de entorno y edítalo
+cp .env.example .env
+# abre .env y añade tu OPENAI_API_KEY
+
+# arrancar la app
+uv run streamlit run src/app.py
+```
+
+- Con `pip` (alternativa):
+
+```bash
+# crear y activar un virtualenv
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+
+# instalar desde el proyecto (intenta primero esto, instalará las dependencias del pyproject)
+pip install .
+
+# si no funciona, instala manualmente (ejemplo)
+# pip install streamlit langchain langchain-openai langchain-chroma python-dotenv duckduckgo-search ddgs fpdf2
+
+# preparar entorno
+cp .env.example .env
+# editar .env y añadir OPENAI_API_KEY
+
+# arrancar con streamlit
+streamlit run src/app.py
+```
+
+3) Variables de entorno necesarias
+
+- `OPENAI_API_KEY` — obligatorio (clave de OpenAI).
+- Opcionales: `PRACTICA_FINAL_PDF_DIR`, `PRACTICA_FINAL_CHROMA_DIR`, `PRACTICA_FINAL_AGENT_MODEL`, `PRACTICA_FINAL_EMBEDDING_MODEL`.
+
+4) Generar PDFs de ejemplo (si `datos/` está vacío)
+
+```bash
+.venv/bin/python scripts/generate_pdf.py
+# o usando uv:
+uv run python scripts/generate_pdf.py
+```
+
+---
 
 #### Descripción general
 
@@ -205,12 +164,3 @@ Desarrolla un **chatbot agéntico con interfaz web** (Streamlit) especializado e
 | Variables de entorno | `python-dotenv` |
 
 ---
-
-#### Pistas y referencias
-
-- Revisa `sesion_2/5_loop_agente.py` para ver cómo se combinan RAG y búsqueda web en un agente ReAct.
-- Revisa `sesion_2/3_memoria_rag.py` para entender el patrón `history_aware_retriever` que necesitarás para mantener el historial en el chatbot.
-- Para arrancar la app: `uv run streamlit run practica_final/app.py`
-- El historial de mensajes de Streamlit se gestiona con `st.session_state.messages`.
-- Para que el guardarraíl sea robusto, usa `temperature=0` y pide al modelo que responda **únicamente** con la palabra `relevante` o `irrelevante`.
-- Si el agente tarda en responder, considera usar `st.spinner()` mientras procesa.

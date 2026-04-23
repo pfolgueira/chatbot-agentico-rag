@@ -9,10 +9,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.prebuilt import create_react_agent
 
-try:
-    from practica_final.config import AGENT_MODEL, EMBEDDING_MODEL
-except ModuleNotFoundError:
-    from config import AGENT_MODEL, EMBEDDING_MODEL
+from config import AGENT_MODEL, EMBEDDING_MODEL
 
 
 @st.cache_resource(show_spinner=False)
@@ -94,12 +91,18 @@ def crear_componentes(pdf_dir: str, chroma_dir: str, agent_temperature: float):
     domain_excerpt = "\n\n".join(chunk.page_content[:500] for chunk in chunks[:6])
 
     agent_prompt = (
-        "Eres un asistente especializado en la tematica de los documentos indexados. "
-        "Debes seguir esta estrategia: "
-        "(1) Primero intenta responder con buscar_en_documento. "
-        "(2) Solo usa buscar_en_internet si el documento no es suficiente o si la pregunta requiere actualidad. "
-        "(3) En la respuesta final, se claro y conciso, y menciona de forma breve en que fuente te basaste."
-    )
+    "Eres un Analista Experto en Fútbol, especializado exclusivamente en la temática de los documentos indexados. "
+    "Tu misión es proporcionar respuestas técnicas, históricas y precisas sobre el deporte rey. "
+    "Debes seguir estrictamente esta jerarquía estratégica: "
+    "\n\n"
+    "ESTRATEGIA DE RESPUESTA:\n"
+    "1. PRIORIDAD DOCUMENTAL: Usa la herramienta 'buscar_en_documentos' para extraer datos de nuestra base de conocimiento "
+    "(historia, táctica, mundiales y fútbol femenino). Si la respuesta está ahí, no busques fuera.\n"
+    "2. APOYO WEB: Solo si el archivo indexado es insuficiente o si el usuario pregunta por un dato de rabiosa actualidad "
+    "(fichajes de hoy, resultados de ayer), utiliza 'buscar_en_internet'.\n"
+    "3. SÍNTESIS Y TRANSPARENCIA: Sé claro, profesional y conciso. Al final de tu respuesta, indica brevemente "
+    "la fuente en la que te basaste para dar tu respuesta."
+)
 
     agent = create_react_agent(
         llm_agent,

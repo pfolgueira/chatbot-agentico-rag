@@ -1,17 +1,12 @@
 import os
+from pathlib import Path
 
 import streamlit as st
 
-try:
-    from practica_final.components import crear_componentes
-    from practica_final.config import DEFAULT_CHROMA_DIR, DEFAULT_PDF_DIR
-    from practica_final.guardrails import es_pregunta_relevante
-    from practica_final.message_utils import extraer_fuentes, extraer_respuesta_final, to_lc_messages
-except ModuleNotFoundError:
-    from components import crear_componentes
-    from config import DEFAULT_CHROMA_DIR, DEFAULT_PDF_DIR
-    from guardrails import es_pregunta_relevante
-    from message_utils import extraer_fuentes, extraer_respuesta_final, to_lc_messages
+from components import crear_componentes
+from config import DEFAULT_CHROMA_DIR, DEFAULT_PDF_DIR
+from guardrails import es_pregunta_relevante
+from message_utils import extraer_fuentes, extraer_respuesta_final, to_lc_messages
 
 
 def init_session_state() -> None:
@@ -19,11 +14,42 @@ def init_session_state() -> None:
         st.session_state.messages = []
 
 
-def main() -> None:
-    st.set_page_config(page_title="Practica Final - Chatbot Agentico", page_icon="AI", layout="wide")
+# Avatares desde la carpeta assets en la raíz del proyecto
+BASE_DIR = Path(__file__).resolve().parents[1]
+USER_AVATAR = str(BASE_DIR / "assets" / "user.png")
+ASSISTANT_AVATAR = str(BASE_DIR / "assets" / "assistant.png")
 
-    st.title("Practica Final: Chatbot Agentico con RAG y Web")
-    st.caption("Guardarrailes tematicos + Agente ReAct + Chroma + DuckDuckGo")
+
+def main() -> None:
+    st.set_page_config(page_title="Chatbot Agéntico con RAG, Búsqueda Web y Guardarraíles", page_icon="AI", layout="wide")
+
+    st.title("🤖 Chatbot Agéntico con RAG, Búsqueda Web y Guardarraíles")
+    st.caption("Guardarraíles tematicos + Agente ReAct + Chroma + DuckDuckGo")
+
+    # Inject custom CSS for chat border and minor slider tweaks.
+    st.markdown(
+        """
+        <style>
+        /* Ensure primary color (theme) is used for inputs; fallback for slider thumb */
+        input[type=range]::-webkit-slider-thumb { background: #0b3d91 !important; }
+        input[type=range]::-moz-range-thumb { background: #0b3d91 !important; }
+
+        /* Chat message border / bubble visual */
+        [data-testid="stChatMessage"] {
+            border: 1px solid #0b3d91 !important;
+            border-radius: 10px !important;
+            padding: 6px !important;
+        }
+
+        /* Slightly tint the assistant bubble background */
+        [data-testid="stChatMessage"]:has(img[alt="assistant"]) {
+            background-color: rgba(11,61,145,0.04) !important;
+        }
+
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
         st.header("Configuracion")
@@ -43,7 +69,8 @@ def main() -> None:
             st.stop()
 
     for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
+        avatar = ASSISTANT_AVATAR if msg.get("role") == "assistant" else USER_AVATAR
+        with st.chat_message(msg["role"], avatar=avatar):
             st.markdown(msg["content"])
             if msg["role"] == "assistant" and msg.get("sources"):
                 st.caption("Fuentes: " + ", ".join(msg["sources"]))
@@ -52,11 +79,11 @@ def main() -> None:
 
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
+        with st.chat_message("user", avatar=USER_AVATAR):
             st.markdown(user_input)
 
-        with st.chat_message("assistant"):
-            with st.spinner("Evaluando guardarrailes..."):
+        with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
+            with st.spinner("Analizando tu jugada... 📊"):
                 relevante = es_pregunta_relevante(
                     guard_llm=components["guard_llm"],
                     domain_excerpt=components["domain_excerpt"],
@@ -65,8 +92,9 @@ def main() -> None:
 
             if not relevante:
                 rechazo = (
-                    "Puedo ayudarte con preguntas relacionadas con los documentos indexados. "
-                    "Si quieres, reformula tu pregunta para enfocarla en esa tematica."
+                    "¡Vaya! Parece que nos hemos salido del campo de juego. 😅\n\n"
+                    "Soy un **experto** en todo lo relacionado con el **fútbol** (historia, táctica, mundiales, fútbol femenino y más). "
+                    "Para poder ayudarte mejor, ¡prueba a hacerme una pregunta sobre ese tema!"
                 )
                 st.markdown(rechazo)
                 st.session_state.messages.append(
@@ -77,7 +105,7 @@ def main() -> None:
                     }
                 )
             else:
-                with st.spinner("Pensando y consultando fuentes..."):
+                with st.spinner("Consultando la pizarra táctica... ⚽"):
                     conversational_messages = to_lc_messages(st.session_state.messages)
                     result = components["agent"].invoke({"messages": conversational_messages})
 
@@ -86,8 +114,6 @@ def main() -> None:
                 sources = extraer_fuentes(result_messages)
 
                 st.markdown(final_answer)
-                if sources:
-                    st.caption("Fuentes: " + ", ".join(sources))
 
                 st.session_state.messages.append(
                     {
